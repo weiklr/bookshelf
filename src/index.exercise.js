@@ -12,7 +12,6 @@ import 'bootstrap/dist/css/bootstrap-reboot.css'
 
 import * as React from 'react'
 import ReactDOM from 'react-dom'
-import styled from '@emotion/styled'
 
 // 🐨 you'll need to import some new components that you'll be creating
 // in this file
@@ -35,14 +34,6 @@ function LoginForm({onSubmit, submitButton}) {
 
   // 🐨 this <form> could use a css prop
   // 🎨
-  //  display: 'flex',
-  //  flexDirection: 'column',
-  //  alignItems: 'stretch',
-  //  '> div': {
-  //    margin: '10px auto',
-  //    width: '100%',
-  //    maxWidth: '300px',
-  //  },
   return (
     <form
       onSubmit={handleSubmit}
@@ -83,12 +74,6 @@ function App() {
 
   // 🐨 this div could use a css prop to get its children rendered nicer
   // 🎨
-  //    display: 'flex',
-  //    flexDirection: 'column',
-  //    alignItems: 'center',
-  //    justifyContent: 'center',
-  //    width: '100%',
-  //    height: '100vh',
   return (
     <div
       css={{
@@ -105,9 +90,6 @@ function App() {
       {/*
         🐨 the two buttons are too close, let's space them out
           🎨 apply this to the div right below
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-            gridGap: '0.75rem',
       */}
       {/* 🐨 And make sure to use the new Button component for all these buttons */}
       <div
