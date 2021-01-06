@@ -3,39 +3,29 @@ import {jsx} from '@emotion/core'
 import {useEffect, useState} from 'react'
 import './bootstrap'
 import Tooltip from '@reach/tooltip'
-import {FaSearch} from 'react-icons/fa'
+import {FaSearch, FaTimes} from 'react-icons/fa'
 import {Input, BookListUL, Spinner} from './components/lib'
 import {BookRow} from './components/book-row'
 // 🐨 import the client from './utils/api-client'
 import {client} from './utils/api-client'
+import * as colors from './styles/colors'
+import {useAsync} from 'utils/hooks'
 
 function DiscoverBooksScreen() {
   // 🐨 add state for status ('idle', 'loading', or 'success'), data, and query
-  const [status, setStatus] = useState('idle')
-  const [query, setQuery] = useState('')
-  const [data, setData] = useState()
-  // const data = null // 💣 remove this, it's just here so the example doesn't explode
+  const {data, error, run, isLoading, isError, isSuccess} = useAsync()
   // 🐨 you'll also notice that we don't want to run the search until the
   // user has submitted the form, so you'll need a boolean for that as well
+  const [query, setQuery] = useState('')
   const [queried, setQueried] = useState(false)
 
-  // 💰 I called it "queried"
-
-  // 🐨 Add a useEffect callback here for making the request with the
   useEffect(() => {
     if (!queried) {
       return
     }
-    setStatus('loading')
 
-    const search = async () => {
-      const data = await client(`books?query=${encodeURIComponent(query)}`)
-      setData(data)
-      setStatus('success')
-    }
-
-    search()
-  }, [queried, query])
+    run(client(`books?query=${encodeURIComponent(query)}`))
+  }, [queried, query, run])
   // client and updating the status and data.
   // 💰 Here's the endpoint you'll call: `books?query=${encodeURIComponent(query)}`
   // 🐨 remember, effect callbacks are called on the initial render too
@@ -43,8 +33,6 @@ function DiscoverBooksScreen() {
   // they haven't then return early (💰 this is what the queried state is for).
 
   // 🐨 replace these with derived state values based on the status.
-  const isLoading = status === 'loading' ? true : false
-  const isSuccess = status === 'success' ? true : false
 
   function handleSearchSubmit(event) {
     event.preventDefault()
@@ -80,11 +68,24 @@ function DiscoverBooksScreen() {
                 background: 'transparent',
               }}
             >
-              {isLoading ? <Spinner /> : <FaSearch aria-label="search" />}
+              {isLoading ? (
+                <Spinner />
+              ) : isError ? (
+                <FaTimes aria-label="error" css={{color: colors.danger}} />
+              ) : (
+                <FaSearch aria-label="search" />
+              )}
             </button>
           </label>
         </Tooltip>
       </form>
+
+      {isError ? (
+        <div css={{color: colors.danger}}>
+          <p>There was an error:</p>
+          <pre>{error.message}</pre>
+        </div>
+      ) : null}
 
       {isSuccess ? (
         data?.books?.length ? (
