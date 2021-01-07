@@ -11,6 +11,11 @@ import {client} from './utils/api-client'
 import * as colors from './styles/colors'
 import {useAsync} from 'utils/hooks'
 
+/**
+ *  *LWK NOTES
+ *  maybe can understand why useAsync have useSafeSetState, and whether is it recommended to use callback to create 'stable' functions to write better reuseable hooks?
+ */
+
 function DiscoverBooksScreen() {
   // 🐨 add state for status ('idle', 'loading', or 'success'), data, and query
   const {data, error, run, isLoading, isError, isSuccess} = useAsync()
