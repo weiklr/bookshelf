@@ -10,7 +10,6 @@ import * as mq from 'styles/media-queries'
 import * as colors from 'styles/colors'
 import {StatusButtons} from './status-buttons'
 import {Rating} from './rating'
-import {query} from 'test/data/books'
 
 function BookRow({user, book}) {
   const {title, author, coverImageUrl} = book
@@ -20,12 +19,12 @@ function BookRow({user, book}) {
     queryFn: () =>
       client(`list-items`, {token: user.token}).then(data => data.listItems),
   })
+  const listItem = listItems?.find(item => item.bookId === book.id)
   // 🐨 call useQuery here to get the list item
   // queryKey should be 'list-items'
   // queryFn should be a call to the list-items endpoint
 
   // 🐨 assign listItem to the list item that has the same bookId as the book.id
-  const listItem = listItems?.find(item => item.bookId === book.bookId)
 
   const id = `book-row-book-${book.id}`
 

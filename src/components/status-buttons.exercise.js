@@ -56,6 +56,7 @@ function StatusButtons({user, book}) {
     queryFn: () =>
       client(`list-items`, {token: user.token}).then(data => data.listItems),
   })
+  const listItem = listItems?.find(item => item.bookId === book.id)
 
   // 🐨 call useQuery here to get the listItem (if it exists)
   // queryKey should be 'list-items'
@@ -63,7 +64,6 @@ function StatusButtons({user, book}) {
 
   // 🐨 search through the listItems you got from react-query and find the
   // one with the right bookId.
-  const listItem = listItems?.find(item => item.bookId === book.id)
 
   const [update] = useMutation(
     updates =>
