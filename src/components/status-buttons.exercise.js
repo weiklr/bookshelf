@@ -10,7 +10,7 @@ import {
   FaTimesCircle,
 } from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
-import {useQuery, useMutation, queryCache} from 'react-query'
+import {useMutation, queryCache} from 'react-query'
 import {client} from 'utils/api-client'
 // 🐨 you'll need useQuery, useMutation, and queryCache from 'react-query'
 // 🐨 you'll also need client from 'utils/api-client'
