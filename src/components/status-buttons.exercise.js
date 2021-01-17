@@ -18,6 +18,7 @@ import {client} from 'utils/api-client'
 import {useAsync} from 'utils/hooks'
 import * as colors from 'styles/colors'
 import {CircleButton, Spinner} from './lib'
+import {useListItem} from 'utils/list-items'
 
 function TooltipButton({label, highlight, onClick, icon, ...rest}) {
   const {isLoading, isError, error, run} = useAsync()
@@ -51,12 +52,7 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
 }
 
 function StatusButtons({user, book}) {
-  const {data: listItems} = useQuery({
-    queryKey: 'list-items',
-    queryFn: () =>
-      client(`list-items`, {token: user.token}).then(data => data.listItems),
-  })
-  const listItem = listItems?.find(item => item.bookId === book.id)
+  const listItem = useListItem(user, book.id)
 
   // 🐨 call useQuery here to get the listItem (if it exists)
   // queryKey should be 'list-items'
