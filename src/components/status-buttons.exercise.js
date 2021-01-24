@@ -18,13 +18,22 @@ import {client} from 'utils/api-client'
 import {useAsync} from 'utils/hooks'
 import * as colors from 'styles/colors'
 import {CircleButton, Spinner} from './lib'
-import {useListItem, useUpdateListItem} from 'utils/list-items'
+import {
+  useListItem,
+  useUpdateListItem,
+  useRemoveListItem,
+  useCreateListItem,
+} from 'utils/list-items'
 
 function TooltipButton({label, highlight, onClick, icon, ...rest}) {
-  const {isLoading, isError, error, run} = useAsync()
+  const {isLoading, isError, error, run, reset} = useAsync()
 
   function handleClick() {
-    run(onClick())
+    if (isError) {
+      reset()
+    } else {
+      run(onClick())
+    }
   }
 
   return (
@@ -61,17 +70,11 @@ function StatusButtons({user, book}) {
   // 🐨 search through the listItems you got from react-query and find the
   // one with the right bookId.
 
-  const [update] = useUpdateListItem(user)
+  const [update] = useUpdateListItem(user, {throwOnError: true})
 
-  const [remove] = useMutation(
-    ({id}) => client(`list-items/${id}`, {method: 'DELETE', token: user.token}),
-    {onSettled: () => queryCache.invalidateQueries('list-items')},
-  )
+  const [remove] = useRemoveListItem(user, {throwOnError: true})
 
-  const [create] = useMutation(
-    ({bookId}) => client(`list-items`, {data: {bookId}, token: user.token}),
-    {onSettled: () => queryCache.invalidateQueries('list-items')},
-  )
+  const [create] = useCreateListItem(user, {throwOnError: true})
   // 💰 for all the mutations below, if you want to get the list-items cache
   // updated after this query finishes the use the `onSettled` config option
   // to queryCache.invalidateQueries('list-items')
