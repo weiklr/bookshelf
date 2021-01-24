@@ -1,8 +1,8 @@
 /** @jsx jsx */
 import {jsx} from '@emotion/core'
-
+import {ErrorMessage} from 'components/lib'
+import {useUpdateListItem} from 'utils/list-items'
 import * as React from 'react'
-import {useMutation, queryCache} from 'react-query'
 import {client} from 'utils/api-client'
 // 🐨 you'll need useMutation and queryCache from react-query
 // 🐨 you'll also need the client from utils/api-client
@@ -22,15 +22,7 @@ const visuallyHiddenCSS = {
 
 function Rating({listItem, user}) {
   const [isTabbing, setIsTabbing] = React.useState(false)
-  const [update] = useMutation(
-    updates =>
-      client(`list-items/${updates.id}`, {
-        method: 'PUT',
-        data: updates,
-        token: user.token,
-      }),
-    {onSettled: () => queryCache.invalidateQueries('list-items')},
-  )
+  const [update, {error, isError}] = useUpdateListItem(user)
   // 🐨 call useMutation here and call the function "update"
   // the mutate function should call the list-items/:listItemId endpoint with a PUT
   //   and the updates as data. The mutate function will be called with the updates
@@ -116,6 +108,13 @@ function Rating({listItem, user}) {
       }}
     >
       <span css={{display: 'flex'}}>{stars}</span>
+      {isError ? (
+        <ErrorMessage
+          error={error}
+          variant="inline"
+          css={{marginLeft: 6, fontSize: '0.7em'}}
+        />
+      ) : null}
     </div>
   )
 }

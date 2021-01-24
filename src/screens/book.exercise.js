@@ -7,16 +7,15 @@ import {FaRegCalendarAlt} from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
 import {useParams} from 'react-router-dom'
 // 🐨 you'll need these:
-import {useMutation, queryCache} from 'react-query'
 import {useBook} from 'utils/books'
 import {client} from 'utils/api-client'
 import {formatDate} from 'utils/misc'
 import * as mq from 'styles/media-queries'
 import * as colors from 'styles/colors'
-import {Textarea} from 'components/lib'
+import {Textarea, ErrorMessage} from 'components/lib'
 import {Rating} from 'components/rating'
 import {StatusButtons} from 'components/status-buttons'
-import {useListItem} from 'utils/list-items'
+import {useListItem, useUpdateListItem} from 'utils/list-items'
 
 function BookScreen({user}) {
   const {bookId} = useParams()
@@ -117,15 +116,7 @@ function ListItemTimeframe({listItem}) {
 }
 
 function NotesTextarea({listItem, user}) {
-  const [mutate] = useMutation(
-    updates =>
-      client(`list-items/${updates.id}`, {
-        method: 'PUT',
-        data: updates,
-        token: user.token,
-      }),
-    {onSettled: () => queryCache.invalidateQueries('list-items')},
-  )
+  const [mutate, {error, isError}] = useUpdateListItem(user)
 
   // 🐨 call useMutation here
   // the mutate function should call the list-items/:listItemId endpoint with a PUT
@@ -158,6 +149,13 @@ function NotesTextarea({listItem, user}) {
         >
           Notes
         </label>
+        {isError ? (
+          <ErrorMessage
+            error={error}
+            variant="inline"
+            css={{marginLeft: 6, fontSize: '0.7em'}}
+          />
+        ) : null}
       </div>
       <Textarea
         id="notes"
