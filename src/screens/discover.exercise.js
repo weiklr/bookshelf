@@ -5,11 +5,17 @@ import * as React from 'react'
 import Tooltip from '@reach/tooltip'
 import {FaSearch, FaTimes} from 'react-icons/fa'
 // 🐨 you'll need useQuery from 'react-query'
-import {useBookSearch} from 'utils/books'
+import {useBookSearch, refetchBookSearchQuery} from 'utils/books'
 import * as colors from 'styles/colors'
 import {BookRow} from 'components/book-row'
 import {BookListUL, Spinner, Input} from 'components/lib'
 
+/**
+ *  *LWK NOTES
+ * 1. learnt to prefetch query when component unmounts to improve UX
+ * 2. learnt how to use queryCache to do optimistic updates and roll back to previous item if failed.
+ *
+ */
 function DiscoverBooksScreen({user}) {
   const [query, setQuery] = React.useState('')
   const [queried, setQueried] = React.useState(false)
@@ -18,6 +24,10 @@ function DiscoverBooksScreen({user}) {
     query,
     user,
   )
+
+  React.useEffect(() => {
+    return () => refetchBookSearchQuery(user)
+  }, [user])
 
   // 🐨 replace this useAsync call with a useQuery call to handle the book search
   // the queryKey should be ['bookSearch', {query}]
