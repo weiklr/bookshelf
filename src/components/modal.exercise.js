@@ -1,7 +1,8 @@
+import React from 'react'
 // 🐨 you're going to need the Dialog component
 // It's just a light wrapper around ReachUI Dialog
 // 📜 https://reacttraining.com/reach-ui/dialog/
-// import {Dialog} from './lib'
+import {Dialog} from './lib'
 
 // 💰 Here's a reminder of how your components will be used:
 /*
@@ -23,10 +24,63 @@
 // meaning we don't have control over the structure of the components. But
 // we still want to have implicitly shared state, so...
 // 🐨 create a ModalContext here with React.createContext
+const ModalContext = React.createContext()
 
 // 🐨 create a Modal component that manages the isOpen state (via useState)
 // and renders the ModalContext.Provider with the value which will pass the
 // isOpen state and setIsOpen function
+const Modal = props => {
+  const [isOpen, setIsOpen] = React.useState(false)
+  return <ModalContext.Provider value={[isOpen, setIsOpen]} {...props} />
+}
+
+const useModalContext = () => {
+  const context = React.useContext(ModalContext)
+  if (context === undefined) {
+    throw new Error('Component must be used within a ModalProvider')
+  }
+  return context
+}
+
+const ModalDismissButton = props => {
+  const [, setIsOpen] = useModalContext()
+  const {children, ...otherProps} = props
+  const childElement = React.Children.only(children)
+  return React.cloneElement(childElement, {
+    ...otherProps,
+    setIsOpen,
+    onClick: () => setIsOpen(false),
+  })
+}
+
+const ModalOpenButton = props => {
+  const [, setIsOpen] = useModalContext()
+  const {children, ...otherProps} = props
+  const childElement = React.Children.only(children)
+  return React.cloneElement(childElement, {
+    ...otherProps,
+    setIsOpen,
+    onClick: () => setIsOpen(true),
+  })
+}
+
+const ModalContents = props => {
+  const [isOpen, setIsOpen] = useModalContext()
+  const {children, ...otherProps} = props
+  return (
+    <Dialog isOpen={isOpen} onDismiss={() => setIsOpen(false)} {...otherProps}>
+      {children}
+    </Dialog>
+  )
+}
+
+export {
+  ModalContents,
+  ModalDismissButton,
+  ModalOpenButton,
+  Modal,
+  useModalContext,
+}
 
 // 🐨 create a ModalDismissButton component that accepts children which will be
 // the button which we want to clone to set it's onClick prop to trigger the
