@@ -1,24 +1,23 @@
 import React from 'react'
+/** @jsx jsx */
+import {jsx} from '@emotion/core'
+
 // 🐨 you're going to need the Dialog component
 // It's just a light wrapper around ReachUI Dialog
 // 📜 https://reacttraining.com/reach-ui/dialog/
-import {Dialog} from './lib'
+import {Dialog, CircleButton} from './lib'
+import VisuallyHidden from '@reach/visually-hidden'
 
-// 💰 Here's a reminder of how your components will be used:
-/*
-<Modal>
-  <ModalOpenButton>
-    <button>Open Modal</button>
-  </ModalOpenButton>
-  <ModalContents aria-label="Modal label (for screen readers)">
-    <ModalDismissButton>
-      <button>Close Modal</button>
-    </ModalDismissButton>
-    <h3>Modal title</h3>
-    <div>Some great contents of the modal</div>
-  </ModalContents>
-</Modal>
-*/
+const callAll = (...fns) => {
+  console.log('fns are', fns)
+  return (...args) => {
+    console.log('calling fn')
+    fns.forEach(fn => {
+      console.log(fn)
+      fn && fn(...args)
+    })
+  }
+}
 
 // we need this set of compound components to be structurally flexible
 // meaning we don't have control over the structure of the components. But
@@ -48,8 +47,7 @@ const ModalDismissButton = props => {
   const childElement = React.Children.only(children)
   return React.cloneElement(childElement, {
     ...otherProps,
-    setIsOpen,
-    onClick: () => setIsOpen(false),
+    onClick: callAll(() => setIsOpen(false), childElement.props.onClick),
   })
 }
 
@@ -59,12 +57,11 @@ const ModalOpenButton = props => {
   const childElement = React.Children.only(children)
   return React.cloneElement(childElement, {
     ...otherProps,
-    setIsOpen,
-    onClick: () => setIsOpen(true),
+    onClick: callAll(() => setIsOpen(true), childElement.props.onClick),
   })
 }
 
-const ModalContents = props => {
+const ModalContentsBase = props => {
   const [isOpen, setIsOpen] = useModalContext()
   const {children, ...otherProps} = props
   return (
@@ -74,6 +71,22 @@ const ModalContents = props => {
   )
 }
 
+const ModalContents = ({title, children, ...props}) => {
+  return (
+    <ModalContentsBase {...props}>
+      <div css={{display: 'flex', justifyContent: 'flex-end'}}>
+        <ModalDismissButton>
+          <CircleButton>
+            <VisuallyHidden>Close</VisuallyHidden>
+            <span aria-hidden>×</span>
+          </CircleButton>
+        </ModalDismissButton>
+      </div>
+      <h3 css={{textAlign: 'center', fontSize: '2em'}}>{title}</h3>
+      {children}
+    </ModalContentsBase>
+  )
+}
 export {
   ModalContents,
   ModalDismissButton,

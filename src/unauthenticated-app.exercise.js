@@ -2,22 +2,9 @@
 import {jsx} from '@emotion/core'
 
 import * as React from 'react'
-import VisuallyHidden from '@reach/visually-hidden'
-import {
-  Input,
-  CircleButton,
-  Button,
-  Spinner,
-  FormGroup,
-  ErrorMessage,
-} from './components/lib'
+import {Input, Button, Spinner, FormGroup, ErrorMessage} from './components/lib'
 // 🐨 import all the Modal compound components you created in ./components/modal
-import {
-  Modal,
-  ModalContents,
-  ModalDismissButton,
-  ModalOpenButton,
-} from './components/modal'
+import {Modal, ModalContents, ModalOpenButton} from './components/modal'
 import {Logo} from './components/logo'
 import {useAuth} from './context/auth-context'
 import {useAsync} from './utils/hooks'
@@ -73,17 +60,6 @@ function LoginForm({onSubmit, submitButton}) {
   )
 }
 
-const circleDismissButton = (
-  <div css={{display: 'flex', justifyContent: 'flex-end'}}>
-    <ModalDismissButton>
-      <CircleButton>
-        <VisuallyHidden>Close</VisuallyHidden>
-        <span aria-hidden>×</span>
-      </CircleButton>
-    </ModalDismissButton>
-  </div>
-)
-
 function UnauthenticatedApp() {
   const {login, register} = useAuth()
   return (
@@ -108,11 +84,11 @@ function UnauthenticatedApp() {
       >
         <Modal>
           <ModalOpenButton>
-            <Button variant="primary">Login</Button>
+            <Button variant="primary" onClick={() => alert('pop')}>
+              Login
+            </Button>
           </ModalOpenButton>
-          <ModalContents aria-label="Login Form">
-            {circleDismissButton}
-            <h3 css={{textAlign: 'center', fontSize: '2em'}}>{'Login'}</h3>
+          <ModalContents aria-label="Login Form" title="Login">
             <LoginForm
               onSubmit={login}
               submitButton={<Button variant="primary">Login</Button>}
@@ -123,9 +99,7 @@ function UnauthenticatedApp() {
           <ModalOpenButton>
             <Button variant="secondary">Register</Button>
           </ModalOpenButton>
-          <ModalContents aria-label="Registration Form">
-            {circleDismissButton}
-            <h3 css={{textAlign: 'center', fontSize: '2em'}}>{'Register'}</h3>
+          <ModalContents aria-label="Registration Form" title="Registration">
             <LoginForm
               onSubmit={register}
               submitButton={<Button variant="secondary">Register</Button>}
