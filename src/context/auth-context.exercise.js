@@ -7,6 +7,13 @@ import {client} from 'utils/api-client'
 import {useAsync} from 'utils/hooks'
 import {FullPageSpinner, FullPageErrorFallback} from 'components/lib'
 
+/**
+ * * LWK NOTES
+ * from react dev tools we can see that auth provider doesn't cause any re-renders, so it's pointless to optimize this context with useCallback and useMemo.
+ * although useCallback can still be used, incase other devs want to use those functions in a useEffect dep array, we should always test before and after adding these changes to avoid unnecessary complexities
+ * @returns
+ */
+
 async function getUser() {
   let user = null
 
@@ -39,12 +46,27 @@ function AuthProvider(props) {
     run(getUser())
   }, [run])
 
-  const login = form => auth.login(form).then(user => setData(user))
-  const register = form => auth.register(form).then(user => setData(user))
-  const logout = () => {
+  const login = React.useCallback(
+    form => auth.login(form).then(user => setData(user)),
+    [setData],
+  )
+  const register = React.useCallback(
+    form => auth.register(form).then(user => setData(user)),
+    [setData],
+  )
+  const logout = React.useCallback(() => {
     auth.logout()
     setData(null)
-  }
+  }, [setData])
+
+  // we meomized the functions that made up provider.value as it will cause all consumers of auth-provider to re-render.
+  // this is because we are creating the auth value inside the object, which causes all consumers to re-render when the provider re-renders
+  const value = React.useMemo(() => ({user, login, register, logout}), [
+    login,
+    logout,
+    register,
+    user,
+  ])
 
   if (isLoading || isIdle) {
     return <FullPageSpinner />
@@ -55,7 +77,7 @@ function AuthProvider(props) {
   }
 
   if (isSuccess) {
-    const value = {user, login, register, logout}
+    // const value = {user, login, register, logout}
     return <AuthContext.Provider value={value} {...props} />
   }
 

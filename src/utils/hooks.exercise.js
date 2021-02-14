@@ -1,4 +1,5 @@
 import * as React from 'react'
+import {wrap} from 'components/profiler'
 
 function useSafeDispatch(dispatch) {
   const mounted = React.useRef(false)
